@@ -1,0 +1,31 @@
+version: '3.9'
+
+services:
+  db:
+    image: mysql:8
+    restart: always
+    environment:
+      MYSQL_DATABASE: 'tiktok'
+      MYSQL_USER: 't11n'
+      MYSQL_PASSWORD: '123456'
+      MYSQL_ROOT_PASSWORD: 'root'
+    ports:
+      - '3306:3306'
+    volumes:
+      - my-db:/var/lib/mysql
+
+  api:
+    build: .
+    command: ["gunicorn", "--bind", "0.0.0.0:8000", "tiktok_api.wsgi:application"]
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      - DEBUG=True
+      - DJANGO_SETTINGS_MODULE=tiktok_api.settings
+
+volumes:
+  my-db:

@@ -1,0 +1,15 @@
+
+# configuration environnement 
+.env*
+env/
+venv/
+
+# Django 
+*.log
+.pot
+.pyc
+__pycache__
+
+staticfiles
+
+!.env.example

@@ -1,0 +1,6 @@
+asgiref==3.8.1
+Django==5.1.1
+gunicorn
+mysqlclient==2.2.4
+python-decouple==3.8
+sqlparse==0.5.1
