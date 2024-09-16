@@ -1,31 +1,22 @@
-# Use an official Python runtime as a parent image
-FROM python:3.10-slim
+# Pull base image
+FROM python:3.11
 
-# Set environment variables
+# Set environment varibles
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
+# Set the working directory
+WORKDIR /usr/src/app
+
 # Install dependencies
-RUN apt-get update \
-    && apt-get install -y \
-       build-essential \
-       pkg-config \
-       default-libmysqlclient-dev \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+COPY ./requirements.txt .
+RUN pip install -r requirements.txt
 
-# Set the working directory in the container
-WORKDIR /app
-
-# Install Python dependencies
-COPY requirements.txt /app/
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Copy the project files into the container
+# Copy the project code into the container
 COPY . .
 
-# Expose port 8000 for the Django app
-EXPOSE 8000
+# Make entrypoint executable
+RUN chmod +x ./docker-entrypoint.sh
 
-# Command to run the Django application with Gunicorn
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "myproject.wsgi:application"]
+# Run entrypoint.sh
+ENTRYPOINT ["./docker-entrypoint.sh"]

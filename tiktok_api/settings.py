@@ -12,11 +12,12 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 import os
 from pathlib import Path
-from decouple import config
+import environ
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
+env = environ.Env(DEBUG=(bool, False))
+environ.Env.read_env(env_file=os.path.join(BASE_DIR, '.env'))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
@@ -25,14 +26,22 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-y!0zv4bh*_de)#-%83xrz^4w3och7ot=c!je0ycz2du5+zq3e@'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env.bool('DEBUG', True)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', cast=str, default='*')
 
 
 # Application definition
 
-INSTALLED_APPS = [
+THIRD_PARTY_APPS = [
+    'rest_framework',
+]
+
+LOCAL_APPS = [
+    'users',
+]
+
+DJANGO_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -40,6 +49,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 ]
+
+INSTALLED_APPS = THIRD_PARTY_APPS + LOCAL_APPS + DJANGO_APPS
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -78,12 +89,12 @@ WSGI_APPLICATION = 'tiktok_api.wsgi.application'
 # Database
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'tiktok',
-        'USER': 't11n',
-        'PASSWORD': '123456',
-        'HOST': 'db',  # Use 'localhost' for local machine
-        'PORT': '3306', 
+        "ENGINE": "django.db.backends.mysql",
+        "NAME": env.str('DB_NAME','tiktok'),  # To developer: change the database name to timberscada
+        "HOST": env.str('DB_HOST', 'db'),
+        "USER": env.str('DB_USER','t11n'),
+        "PASSWORD": env.str('DB_PASS','123456'),
+        "PORT": env.int('DB_PORT', 3306)
     }
 }
 
@@ -128,3 +139,5 @@ USE_TZ = True
 STATIC_URL = '/static/'  # Ensure this has a leading and trailing slash
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+AUTH_USER_MODEL = 'users.User'
