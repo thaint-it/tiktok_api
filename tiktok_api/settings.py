@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 import os
 from pathlib import Path
+from posixpath import dirname
 import environ
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -53,6 +54,8 @@ DJANGO_APPS = [
 INSTALLED_APPS = THIRD_PARTY_APPS + LOCAL_APPS + DJANGO_APPS
 
 MIDDLEWARE = [
+    'django.middleware.security.SecurityMiddleware',
+    # 'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -138,6 +141,56 @@ USE_TZ = True
 # Static files
 STATIC_URL = '/static/'  # Ensure this has a leading and trailing slash
 
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'users.User'
+
+REST_FRAMEWORK = {
+    # Use Django's standard `django.contrib.auth` permissions,
+    "DEFAULT_VERSIONING_CLASS": "rest_framework.versioning.NamespaceVersioning",
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'middlewares.authentication.AuthenticationJWT',
+    ],
+    "EXPIRED_FOREVER": "2000-10-10 00:00:00",
+    "DEFAULT_THROTTLE_RATES": {
+        "custom_user": "150/minute",
+    },
+    "OVERRIDE_THROTTLE_RATES": {"special": "10000/hour"},
+}
+
+
+FILE_DIR = dirname(__file__)
+
+JWT_AUTH = {
+    'JWT_PUBLIC_KEY': open(dirname(FILE_DIR) + '/pub_key.pem', 'rb').read(),
+    'JWT_PRIVATE_KEY': open(dirname(FILE_DIR) + '/privkey.pem', 'rb').read(),
+    'JWT_ALGORITHM': 'RS256',
+}
+
+
+# REST_FRAMEWORK = {
+#     # Use Django's standard `django.contrib.auth` permissions,
+#     "DEFAULT_VERSIONING_CLASS": "rest_framework.versioning.NamespaceVersioning",
+#     'DEFAULT_PERMISSION_CLASSES': [
+#         'rest_framework.permissions.IsAuthenticated',
+#     ],
+#     'DEFAULT_AUTHENTICATION_CLASSES': [
+#         'middlewares.authentication.AuthenticationJWT',
+#     ],
+#     "EXPIRED_FOREVER": "2000-10-10 00:00:00",
+#     "DEFAULT_THROTTLE_RATES": {
+#         "custom_user": "150/minute",
+#     },
+#     "OVERRIDE_THROTTLE_RATES": {"special": "10000/hour"},
+# }
+
+# REST_FRAMEWORK_CACHE = {
+#     "DEFAULT_CACHE_TIMEOUT": 86400,  # Default is 1 day
+# }
+

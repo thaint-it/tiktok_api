@@ -10,6 +10,10 @@ WORKDIR /usr/src/app
 
 # Install dependencies
 COPY ./requirements.txt .
+
+COPY pub_key.pem /usr/src/pub_key.pem
+COPY privkey.pem /usr/src/privkey.pem
+
 RUN pip install -r requirements.txt
 
 # Copy the project code into the container
