@@ -19,6 +19,16 @@ services:
       retries: 10
     networks:
       - db_network
+  
+  redis:
+      image: redis:latest
+      container_name: tiktok_redis
+      volumes:
+        - redis_data:/data  # Mount a volume to persist data
+      networks: 
+        - db_network
+      ports:
+        - "6379:6379"  # Optional, to access Redis externally
     
   backend:
     build:
@@ -38,6 +48,26 @@ services:
           condition: service_healthy
     networks:
       - db_network
+
+
+  asgiserver:
+    build:            
+      context: .
+      dockerfile: Dockerfile
+    container_name: asgiserver
+    command: daphne tiktok_api.asgi:application -b 0.0.0.0 -p 9000
+    volumes:
+      - .:/usr/src/app
+    ports:
+      - "9000:9000"
+    networks: 
+      - db_network
+    depends_on:
+      - backend
+    links:
+      - redis
+    environment:
+      DJANGO_SETTINGS_MODULE: tiktok_api.settings  # Ensure this is correct
    
 networks:
   db_network:
@@ -45,3 +75,5 @@ networks:
 
 volumes:
   mysql_data:
+  redis_data:
+

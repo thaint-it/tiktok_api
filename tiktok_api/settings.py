@@ -36,10 +36,12 @@ ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', cast=str, default='*')
 
 THIRD_PARTY_APPS = [
     'rest_framework',
+    'channels',
 ]
 
 LOCAL_APPS = [
     'users',
+    'posts',
 ]
 
 DJANGO_APPS = [
@@ -84,6 +86,16 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'tiktok_api.wsgi.application'
+ASGI_APPLICATION = 'tiktok_api.asgi.application'
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',  # Use Redis as the backend
+        'CONFIG': {
+            "hosts": [('redis', 6379)],  # Redis server address
+        },
+    },
+}
 
 
 # Database
@@ -97,7 +109,10 @@ DATABASES = {
         "HOST": env.str('DB_HOST', 'db'),
         "USER": env.str('DB_USER','t11n'),
         "PASSWORD": env.str('DB_PASS','123456'),
-        "PORT": env.int('DB_PORT', 3306)
+        "PORT": env.int('DB_PORT', 3306),
+        'OPTIONS': {
+            'charset': 'utf8mb4',
+        },
     }
 }
 
@@ -157,6 +172,7 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'middlewares.authentication.AuthenticationJWT',
     ],
+    'EXCEPTION_HANDLER': 'rest_framework.views.exception_handler',
     "EXPIRED_FOREVER": "2000-10-10 00:00:00",
     "DEFAULT_THROTTLE_RATES": {
         "custom_user": "150/minute",

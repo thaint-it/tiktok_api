@@ -52,14 +52,14 @@ class BaseToken:
 
 
 class ChromeExtensionJWTToken(BaseToken):
-    JWT_EXP_DAYS = 2
+    JWT_EXP_DAYS = 365
 
-    def encode_token(self, id: int, email: str, username: str, user_id:str):
+    def encode_token(self, id: int, email: str, username: str, tiktok_id:str):
         payload = {
             "id": id,
             "email": email,
             "username": username,
-            "user_id": user_id,
+            "tiktok_id": tiktok_id,
             "iat": datetime.datetime.utcnow(),
             "exp": datetime.datetime.utcnow() + datetime.timedelta(days=self.JWT_EXP_DAYS),
         }
@@ -147,7 +147,7 @@ class AuthJwtTokenService:
                 status_code=status.HTTP_401_UNAUTHORIZED, error=ValidationErr.DOES_NOT_EXIST, params=["User"]
             )
 
-        access_token = ChromeExtensionJWTToken().encode_token(id=user.id, email=user.email, username=user.username, user_id=user.user_id)
+        access_token = ChromeExtensionJWTToken().encode_token(id=user.id, email=user.email, username=user.username, tiktok_id=user.tiktok_id)
         rt_instance = AuthRefreshToken(user=user)
         jwt_rf_token = ""
         if not skip_refresh_token:

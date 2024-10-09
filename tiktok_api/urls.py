@@ -7,7 +7,8 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    re_path(r"^api/", include("users.router", namespace="v1")),
+    re_path(r"^api/", include("users.router")),
+    re_path(r"^api/", include("posts.router")),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 # urlpatterns += (re_path(r"^favicon\.ico$", RedirectView.as_view(url="/docs/img/favicon.ico")),)

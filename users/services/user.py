@@ -41,7 +41,7 @@ class UserService:
     @classmethod
     def create_user(cls, user, **kwargs):
         email = kwargs.get('email')
-        user_id = kwargs.get('user_id')
+        tiktok_id = kwargs.get('tiktok_id')
         username = kwargs.get('username')
         password = kwargs.get('password') or settings.DEFAULT_PASSWORD
 
@@ -52,7 +52,7 @@ class UserService:
 
         prepare_data = dict(
             email=email,
-            user_id=user_id,
+            tiktok_id=tiktok_id,
             username=username,
             password=make_password(password)
         )
